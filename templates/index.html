@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Eminence | Quant Coder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --glass-bg: rgba(20, 25, 40, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1;
+            --accent-glow: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient background glow */
+        .ambient-light {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            opacity: 0.15;
+            filter: blur(80px);
+            z-index: 0;
+            animation: pulse 8s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.1) translate(50px, -50px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        /* For WebKit calendars to look okay in dark mode */
+        ::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.7;
+            cursor: pointer;
+        }
+
+        .btn-activate {
+            width: 100%;
+            padding: 16px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-glow));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-activate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-activate:active {
+            transform: translateY(1px);
+        }
+
+        .btn-activate::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        #status-card {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            font-size: 0.9rem;
+            display: none;
+            text-align: center;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(52, 211, 153, 0.3);
+            border-radius: 50%;
+            border-top-color: #34d399;
+            animation: spin 1s ease-in-out infinite;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .terminal-report {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #000;
+            border-radius: 12px;
+            height: 250px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #34d399;
+            border: 1px solid #1f2937;
+            text-align: left;
+            white-space: pre-wrap;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-light"></div>
+    <div class="container">
+        <h1>Agent Eminence</h1>
+        <p class="subtitle">Autonomous Quant Coder. Initiating 9-model ensemble analysis on the top 20 equities.</p>
+        
+        <div class="form-group">
+            <label>Start Time</label>
+            <input type="text" id="start-time" value="Now (Auto-captured)" disabled style="opacity: 0.7; cursor: not-allowed;">
+        </div>
+        
+        <div class="form-group">
+            <label for="end-time">End Time (HH:MM)</label>
+            <input type="time" id="end-time" value="16:00">
+        </div>
+        
+        <button class="btn-activate" onclick="activateAgent()">Activate Bot</button>
+
+        <div id="status-card">
+            <div id="status-text"><div class="spinner"></div> Agent deployed to Hotbar. Analyzing...</div>
+        </div>
+
+        <div id="terminal-view" class="terminal-report"></div>
+        <a id="download-btn" class="btn-activate" style="display: none; text-align: center; text-decoration: none; margin-top: 15px;" href="/api/download" download>📥 Download Dossier</a>
+    </div>
+
+    <script>
+        let pollInterval;
+        let logsInterval;
+
+        async function activateAgent() {
+            const endDate = document.getElementById('end-time').value;
+            const btn = document.querySelector('.btn-activate');
+            const statusCard = document.getElementById('status-card');
+            const statusText = document.getElementById('status-text');
+            const terminalView = document.getElementById('terminal-view');
+            const downloadBtn = document.getElementById('download-btn');
+            
+            if (!endDate) return alert("Please select an end time");
+
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            statusCard.style.display = 'block';
+            terminalView.style.display = 'block';
+            terminalView.textContent = "Booting Agent Eminence Neural Engine...\n";
+            downloadBtn.style.display = 'none';
+            statusText.innerHTML = '<div class="spinner"></div> Agent deployed to Hotbar. Analyzing...';
+
+            try {
+                const res = await fetch('/api/activate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ end_time: endDate })
+                });
+                
+                const data = await res.json();
+                if (data.status === 'error') {
+                    alert(data.message);
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    statusCard.style.display = 'none';
+                    return;
+                }
+
+                // Start polling status and logs
+                pollInterval = setInterval(checkStatus, 2000);
+                logsInterval = setInterval(fetchLogs, 1000);
+            } catch (err) {
+                console.error(err);
+                alert("Failed to start agent.");
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+
+        async function checkStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+
+                if (data.status === 'complete') {
+                    clearInterval(pollInterval);
+                    clearInterval(logsInterval);
+                    fetchLogs(); // one last time
+                    
+                    const statusText = document.getElementById('status-text');
+                    statusText.innerHTML = '✅ Analysis Complete! Dossier generated.';
+                    
+                    const downloadBtn = document.getElementById('download-btn');
+                    downloadBtn.style.display = 'block';
+
+                    const btn = document.querySelector('.btn-activate');
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        async function fetchLogs() {
+            try {
+                const res = await fetch('/api/logs');
+                const data = await res.json();
+                const terminalView = document.getElementById('terminal-view');
+                
+                if (data.logs && data.logs !== terminalView.textContent) {
+                    terminalView.textContent = data.logs;
+                    terminalView.scrollTop = terminalView.scrollHeight;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>
